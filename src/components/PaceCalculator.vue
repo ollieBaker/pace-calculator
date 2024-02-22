@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { formatPace, calcTime } from "../lib/lib";
 import PaceSelector from "../components/PaceSelector.vue";
 
-const selectedPace = ref("");
+const storedPace = localStorage?.getItem("selected-pace") || "240";
+const selectedPace = ref(storedPace);
+
+watch(selectedPace, (val) => {
+  localStorage?.setItem("selected-pace", val);
+});
 </script>
 
 <template>
@@ -92,7 +97,7 @@ const selectedPace = ref("");
       border-bottom: 1px solid black;
       margin-bottom: 0.25rem;
       position: sticky;
-      top: 121px;
+      top: 0;
       z-index: 99;
       background-color: white;
       > th {
@@ -107,7 +112,7 @@ const selectedPace = ref("");
       background-color: wheat;
       font-weight: bold;
       position: sticky;
-      top: 121 + 40.5px;
+      top: 40px;
     }
   }
 

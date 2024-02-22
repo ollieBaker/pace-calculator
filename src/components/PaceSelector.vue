@@ -1,19 +1,33 @@
 <template>
   <div class="pace-selector">
     <form @submit.prevent>
-      <div>
-        <label for="minPace">Min: </label>
-        <select name="minPace" id="minPace" v-model="minPace">
-          <option v-for="min in 10" :key="min" :value="min * 60">
-            {{ min }}/km
-          </option>
-        </select>
-        <label for="maxPace">Max: </label>
-        <select name="maxPace" id="maxPace" v-model="maxPace">
-          <option v-for="max in 5" :key="max" :value="minPace + max * 60">
-            {{ minPace / 60 + max }}/km
-          </option>
-        </select>
+      <div class="pace-selector__range">
+        <div class="pace-selector__range-input">
+          <label for="minPace" class="pace-selector__range-label">Min: </label>
+          <select
+            name="minPace"
+            id="minPace"
+            v-model="minPace"
+            class="pace-selector__range-select"
+          >
+            <option v-for="min in 10" :key="min" :value="min * 60">
+              {{ min }}/km
+            </option>
+          </select>
+        </div>
+        <div class="pace-selector__range-input">
+          <label for="maxPace" class="pace-selector__range-label">Max: </label>
+          <select
+            name="maxPace"
+            id="maxPace"
+            v-model="maxPace"
+            class="pace-selector__range-select"
+          >
+            <option v-for="max in 5" :key="max" :value="minPace + max * 60">
+              {{ minPace / 60 + max }}/km
+            </option>
+          </select>
+        </div>
       </div>
       <div class="pace-selector__slider">
         <label for="pace-selector" class="pace-calculator__label"
@@ -36,7 +50,9 @@
       <option
         v-for="marker in 12"
         :value="minPace + ((maxPace - minPace) / 12) * marker"
-      ></option>
+      >
+        {{ minPace + ((maxPace - minPace) / 12) * marker }}
+      </option>
     </datalist>
   </div>
 </template>
@@ -45,34 +61,44 @@
 import { ref } from "vue";
 import { formatPace } from "../lib/lib";
 
-const minPace = ref(4 * 60);
-const maxPace = ref(6 * 60);
-
-const defaultPace = minPace.value + (maxPace.value - minPace.value) * 0.5;
-
 const model = defineModel({ default: "0" });
 
-model.value = defaultPace.toString();
+const minuteValue = parseInt(model.value);
+const remainder = minuteValue % 60;
+const minPace = ref(Math.max(60, minuteValue - (60 + remainder)));
+const maxPace = ref(Math.min(600, minuteValue + (60 - remainder)));
 </script>
 
 <style scoped lang="scss">
 .pace-selector {
   width: 100%;
+  max-width: 480px;
   display: flex;
   flex-flow: column;
-  position: sticky;
-  top: 0;
-  z-index: 100;
   background: #242424;
   &__slider {
     height: 48px;
-    margin: 0.5rem 0;
+    margin: 1rem 0;
   }
 
   &__display {
     font-size: x-large;
     font-weight: bold;
     font-family: monospace;
+  }
+  &__range {
+    display: flex;
+    justify-content: space-between;
+  }
+  &__range-label {
+    font-size: 1rem;
+  }
+  &__range-select {
+    font-size: medium;
+    width: 8ch;
+    padding: 2px;
+    border: 1px solid white;
+    border-radius: 4px;
   }
 }
 </style>
